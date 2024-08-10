@@ -1,29 +1,18 @@
+import Data from "../data-helper/data"
+import Params from "../data-helper/params";
+
 describe('Pet Tests', () => {
 
+  const data = new Data;
+  const params = new Params;
+  var url= params.url();
 
   it('Create Pet', () => {
-    const postData = {
-      "id": 1995,
-      "category": {
-        "id": 100,
-        "name": "Sokak Kedisi"
-      },
-      "name": "Mercimek",
-      "photoUrls": [
-        "string"
-      ],
-      "tags": [
-        {
-          "id": 99,
-          "name": "tekir"
-        }
-      ],
-      "status": "available"
-    }
+    
     cy.request({
       method: 'POST',
-      url: 'https://petstore.swagger.io/v2/pet',
-      body: postData
+      url: url +'/v2/pet',
+      body: data.createPetPayload()
     })
       .then((response) => {
         expect(response.status).to.eq(200)
@@ -32,12 +21,50 @@ describe('Pet Tests', () => {
 
   it('Get Pet Info', () => {
 
-    cy.request('GET', 'https://petstore.swagger.io/v2/pet/1995')
+    cy.request('GET', url+'/v2/pet/1995')
       .then((response) => {
         expect(response.status).to.eq(200)
       })
 
   })
+
+  it('Update Pet Info', () => {
+    
+    cy.request({
+      method: 'POST',
+      url: url +'/v2/pet',
+      body: data.updateBodyload()
+    })
+      .then((response) => {
+        expect(response.status).to.eq(200)
+      })
+  })
+
+  it('Find Pending Status Pets', () => {
+    
+    cy.request({
+      method: 'GET',
+      url: url +'/v2/pet/findByStatus?status=pending'
+    })
+      .then((response) => {
+        expect(response.status).to.eq(200)
+      })
+  })
+
+  it('Delete Pet', () => {
+    cy.request({
+      method: 'DELETE',
+      url: url + '/v2/pet/1995',
+      headers: data.headerPayload()
+    })
+      .then((response) => {
+        expect(response.status).to.eq(200)
+      })
+  })
+  
+  
+
+
 
   // it('Upload Image', () => {
 
